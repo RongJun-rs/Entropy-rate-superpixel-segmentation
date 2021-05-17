@@ -3,47 +3,53 @@ import pdb,heapq
 import collections
 from utils.decorator import debugit
 
+try:
+    from . import edge_extended_info
+except:
+    from heapManager import edge_extended_info
+# class EdgesExtendedInfoBis:
+#     __slots__ = ["nodei","nodej","wij","gain"]
+#     def __init__(self,nodei,nodej,wij,gain):
+#         self.nodei = nodei
+#         self.nodej = nodej
+#         self.wij = wij
+#         self.gain = gain
+#
+#     def __lt__(self, other):
+#         """
+#             an edge is of lower value than an other edge, if its gain is higher
+#             The aim of this non intuitive definition is to construct a minHeap structure that behaves as
+#              a maxHeap
+#         """
+#         return self.gain > other.gain
+#     def __eq__(self, other):
+#
+#         self_pos = (self.nodei.pos,self.nodej.pos)
+#         other_pos = (other.nodei.pos,other.nodej.pos)
+#
+#         pos_self_1 = min(self_pos)
+#         pos_self_2 = max(self_pos)
+#
+#         pos_other_1 = min(other_pos)
+#         pos_other_2 = max(other_pos)
+#
+#         return  (pos_self_1 == pos_other_1) and (pos_self_2 == pos_other_2)
+#
+#     def __le__(self, other):
+#         return self.gain >= other.gain
+#     def __repr__(self):
+#         keys = self.__slots__
+#         values = [self.nodei,self.nodej,self.wij,self.gain]
+#         s =  dict(zip(keys,values))
+#         out = f"{self.__class__.__name__}("
+#         for key,value in s.items():
+#             out += f" {key} = {value} , "
+#         out = out[:-3]
+#         out += f")"
+#         return out
 
-class EdgesExtendedInfo:
-    __slots__ = ["nodei","nodej","wij","gain"]
-    def __init__(self,nodei,nodej,wij,gain):
-        self.nodei = nodei
-        self.nodej = nodej
-        self.wij = wij
-        self.gain = gain
 
-    def __lt__(self, other):
-        """
-            an edge is of lower value than an other edge, if its gain is higher
-            The aim of this non intuitive definition is to construct a minHeap structure that behaves as
-             a maxHeap
-        """
-        return self.gain > other.gain
-    def __eq__(self, other):
 
-        self_pos = (self.nodei.pos,self.nodej.pos)
-        other_pos = (other.nodei.pos,other.nodej.pos)
-
-        pos_self_1 = min(self_pos)
-        pos_self_2 = max(self_pos)
-
-        pos_other_1 = min(other_pos)
-        pos_other_2 = max(other_pos)
-
-        return  (pos_self_1 == pos_other_1) and (pos_self_2 == pos_other_2)
-
-    def __le__(self, other):
-        return self.gain >= other.gain
-    def __repr__(self):
-        keys = self.__slots__
-        values = [self.nodei,self.nodej,self.wij,self.gain]
-        s =  dict(zip(keys,values))
-        out = f"{self.__class__.__name__}("
-        for key,value in s.items():
-            out += f" {key} = {value} , "
-        out = out[:-3]
-        out += f")"
-        return out
 class HeapInitializer:
     lbda = 0.01
     def __init__(self,edges_with_nodes):
@@ -59,9 +65,8 @@ class HeapInitializer:
         self.gain = self.gainH + self.lbda * self.gainB
 
         #self.edges_with_nodes_and_gain = np.hstack([self.edges_with_nodes,-self.gain.reshape(-1,1)])
-        self.edges_with_nodes_and_gain = [(float(b),a) for (a,b) in zip(self.edges_with_nodes,-self.gain.reshape(-1,1))]
-
-        self.edges_with_nodes_and_gainAsNamedTuple = [EdgesExtendedInfo(tmp[1][0],tmp[1][1],tmp[1][2],tmp[0]) for tmp in self.edges_with_nodes_and_gain]
+        gen = zip(self.edges_with_nodes,self.gain)
+        self.edges_with_nodes_and_gainAsNamedTuple = [edge_extended_info.EdgesExtendedInfo(nodei,nodej,wij,gain) for ((nodei ,nodej ,wij),gain) in gen]
         self.heapMin = self.createBinaryMaxHeap()
 
     @staticmethod

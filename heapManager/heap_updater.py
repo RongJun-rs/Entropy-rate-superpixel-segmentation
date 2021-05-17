@@ -1,29 +1,58 @@
 import numpy as np
-
-
+import time
+from utils.decorator import timeit
 try:
-    from . import  edge_properties_updater
+    from . import  edge_properties_updaterold
 except:
-    from heapManager import edge_properties_updater
+    from heapManager import edge_properties_updaterold
+
+from heapq import heappop,heappush
 
 class HeapUpdater:
-    def __init__(self,heapMin):
+    def __init__(self,heapMin,nbNodes,K=1000):
         self.heapMin = heapMin
-        self.edges = []
+        self.nbNodes = nbNodes
+        self.K = K
+        self.edges = [heappop(self.heapMin)]
+        self.edges[0].update_gain()
+        self.edges[0].update()
+        self.timestamp_adding = time.time()
     def iterate(self):
-        self.id_top_last = self.get_id_top()
-        self.update_top()
-        if self.id_top_last == self.get_id_top():
-            self.edges.append(self.heappop())
-    def heappop(self):
-        pass
-    def __call__(self):
-        while True:
+        gain_not_updated_since_last_adding =  (self.heapMin[0].timestamp < self.timestamp_adding ) # is aways True as first iteration
+        nodeiandnodejoftopHeapAreLinked = (self.heapMin[0].nodei.linked_list_of_nodes is self.heapMin[0].nodej.linked_list_of_nodes)
+        if nodeiandnodejoftopHeapAreLinked:
+            heappop(self.heapMin)
+        elif gain_not_updated_since_last_adding:
+        #if gain_not_updated_since_last_adding:
+            self.heapMin[0].update_gain() #update the top heap
+            top_heap = heappop(self.heapMin) #pop and push to update the heap
+            heappush(self.heapMin,top_heap)
+
+        else: # the top heap is already updated, jut need to pop it
+            self.edges.append(heappop(self.heapMin))
+            self.edges[-1].update()
+            self.timestamp_adding = time.time() #TODO: timestamp is not convenient ..., because
+            #to mark the instant of last time an edge is popped from the heap, in order to update if necessary
+
+    def iterate_multiple(self,nb,print_rate=1000):
+        for i in range(nb):
             self.iterate()
-    def get_id_top(self):
-        pass
-    def update_top(self):
-        self.heapIterator.computeGain()
+            if len(self.heapMin) % print_rate == 0:
+                print(len(self.heapMin))
+
+    @timeit
+    def iterate_until_end(self):
+        d = len(self.heapMin)
+        while d>0 and self.check_condition():
+            self.iterate()
+            if  d % 100000 == 0:
+                print(d)
+            d = len(self.heapMin)
+
+    def check_condition(self):
+        nb_super_pixels = self.heapMin[0].nodei.dNa + self.nbNodes
+        return nb_super_pixels > self.K
+
 
 
 if __name__ == '__main__':

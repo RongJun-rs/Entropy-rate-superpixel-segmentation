@@ -2,14 +2,17 @@ import os,pickle,time,pdb,heapq
 import matplotlib.pyplot as plt
 from utils.decorator import *
 try:
+    from .utils import allUsefulModule
     from . import data_sampler
     from . import network_initializor
-    from .heapManager import edge_properties_updater, heapInitializer,heap_updater
+    from .heapManager import edge_properties_updaterold, heapInitializer,heap_updater
 except:
+    from utils import allUsefulModule
     import data_sampler
-    from heapManager import  edge_properties_updater, heapInitializer,heap_updater
+    from heapManager import  edge_properties_updaterold, heapInitializer,heap_updater
     from network_initialization import network_initializor
 
+import numpy as np
 
 NetworkInitializor = network_initializor.NetworkInitializor
 dirFile = os.path.dirname(__file__)
@@ -37,13 +40,12 @@ class Main:
 
         self.heapMin = self.init_heap()
 
-        self.heap_updater = heap_updater.HeapUpdater(self.heapMin)
-        #self.list_of_edges_properties = self.get_list_of_edge_properties()
-
+        self.heap_updater = heap_updater.HeapUpdater(self.heapMin,nbNodes = np.product(self.img.shape[:2]))
+        self.heap_updater.iterate_until_end()
     #@debugit
     @timeit
     def get_list_of_edge_properties(self):
-        list_of_edges_properties = [edge_properties_updater.EdgePropertiesUpdater(el) for el in self.heapMin]
+        list_of_edges_properties = [edge_properties_updaterold.EdgePropertiesUpdater(el) for el in self.heapMin]
         return list_of_edges_properties
 
     def save(self):
@@ -59,23 +61,13 @@ class Main:
         return pickle.load(open(cls.path,"rb"))
 
 
-def timeit(func,*args,**kwargs):
-    start = time.time()
-    res = func(*args,**kwargs)
-    stop =time.time()
-    print(f"duration of {func.__name__} is {stop-start}" )
-    return res
-
-def debug(function,*args, **kwargs):
-    '''Decorator that places a break point right before calling the function.'''
-    res = pdb.runcall(function,*args,**kwargs)
-    return res
 if __name__ == '__main__':
     index = 15
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
     img = plt.imread(path_img)
     img = img.astype("float32")/255.0
 
+    #img = img[:50,:50]
     #import pdb;alg = pdb.runcall(Main,img)
     alg = Main(img)
 
