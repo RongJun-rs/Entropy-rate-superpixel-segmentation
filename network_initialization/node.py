@@ -13,14 +13,15 @@ class Node:
         Remarks :
             pii, is the only mutable elements, we use slots also, for s
     """
-    __slots__ = ['pos','w','mu','prob']
+    __slots__ = ['pos','w','mu','prob','graph','linked_list_of_nodes']
     def __init__(self,**kwargs):
         #assert len(args) == 3
         self.pos = kwargs['pos']
         self.w = kwargs['w']
         self.mu = kwargs['mu']
+        self.graph = kwargs['graph']
         self.prob = 1
-        #self.listOfNodes = {self}
+        self.linked_list_of_nodes = {self} #begin with empty set, then add the element
     def __repr__(self):
         keys = self.__slots__
         values = [self.pos,self.w,self.mu,self.prob]
@@ -31,3 +32,10 @@ class Node:
         out = out[:-3]
         out += f")"
         return out
+
+    def union(self,other_node):
+        """
+            returns the union of the linked_list_of_nodes and update both of them
+        """
+        self.linked_list_of_nodes = self.linked_list_of_nodes.union(other_node.linked_list_of_nodes)
+        other_node.linked_list_of_nodes = self.linked_list_of_nodes

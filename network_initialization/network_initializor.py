@@ -1,18 +1,16 @@
 import networkx as nx
 import os,itertools
 import numpy as np
-from utils import image_viewer
 import matplotlib.pyplot as plt
 try:
-    from . import data_sampler
+    from utils import data_sampler
     from . import  edge_neighor_adder
     from . import node
 except:
     import data_sampler
-    import edge_neighor_adder
-    import node
+    from network_initialization import edge_neighor_adder
+    from network_initialization import node
 
-Node = node.Node
 
 dirFile = os.path.dirname(__file__)
 
@@ -48,6 +46,8 @@ class NetworkInitializor:
     """
     def __init__(self,img):
         self.img = img
+        self.G = nx.Graph() #init graph
+
         self.edge_neighbor_adder = edge_neighor_adder.EdgeNeighborAdder(self.img)
 
         self.shifts = list(itertools.product(range(-1,2),repeat=2))
@@ -59,7 +59,8 @@ class NetworkInitializor:
 
         self.edges_with_nodes = self.get_edges_and_nodes()
 
-        #self.G = self.init_graph()
+
+        self.add_nodes_to_graph()
 
     def get_edges_for_all_shifts(self):
         """
@@ -130,13 +131,12 @@ class NetworkInitializor:
         mui = wi/np.sum(wi)
         nodeInfo = np.transpose(np.stack([self.edge_neighbor_adder.pos_pixel_as_buff, wi,mui]).reshape(3, -1))
 
-        nodes = [Node(pos = el[0], w = el[1], mu = el[2]) for el in nodeInfo]
+        nodes = [node.Node(pos = el[0], w = el[1], mu = el[2], graph = self.G) for el in nodeInfo]
         return nodes
 
-    def init_graph(self):
-        G = nx.Graph()
-        G.add_weighted_edges_from(self.edges_with_nodes,conn=0.0)
-        return G
+
+    def add_nodes_to_graph(self):
+        self.G.add_nodes_from(self.nodes)
 
 
 
@@ -153,6 +153,9 @@ if __name__ == '__main__':
     alg = NetworkInitializor(img)
 
     self = alg
+
+    import sys
+    sys.exit()
 
     G = nx.Graph()
 
