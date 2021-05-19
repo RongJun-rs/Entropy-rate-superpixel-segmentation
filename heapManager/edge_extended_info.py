@@ -15,7 +15,6 @@ class EdgesExtendedInfo:
         self.gain = gain
 
         self.timestamp = time.time() # time of creation of the nodes
-
     def __lt__(self, other):
         """
             an edge is of lower value than an other edge, if its gain is higher
@@ -47,21 +46,17 @@ class EdgesExtendedInfo:
         out = out[:-3]
         out += f")"
         return out
-
-
     def get_gain(self):
         self.pij = self.wij / self.nodei.w  # pij*ui is equal to pji*muj
         self.pji = self.wij / self.nodej.w
         self.pii = self.nodei.prob
         self.pjj = self.nodej.prob
-
         gain = self.get_gain_H() + self.lbda * self.get_gain_B()
         return gain
-
     def update_gain(self):
         self.gain = self.get_gain()
         self.timestamp = time.time()
-    def update(self):
+    def add_edge_to_graph(self):
         """
             apply the changes on the graph
         """
