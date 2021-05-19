@@ -127,6 +127,7 @@ class NetworkInitializor:
                     (there is as many node as pixels in the image) , then the last value divided byt eh sum of all the edges
 
         """
+        node.Node.dNa = 0
         wi =  np.sum(self.alledges[:,2],axis=0)
         mui = wi/np.sum(wi)
         nodeInfo = np.transpose(np.stack([self.edge_neighbor_adder.pos_pixel_as_buff, wi,mui]).reshape(3, -1))

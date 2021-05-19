@@ -2,7 +2,7 @@ import numpy as np
 
 
 class HeapUpdaterIterator:
-    lbda = 0.1
+    lbda = 0.5
     def __init__(self,heapMin):
         self.heapMin = heapMin
 

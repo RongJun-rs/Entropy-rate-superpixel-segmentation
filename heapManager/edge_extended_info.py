@@ -5,12 +5,13 @@ from utils.decorator import debugit
 
 
 class EdgesExtendedInfo:
-    lbda = 0.01
-    __slots__ = ["nodei","nodej","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
-    def __init__(self,nodei,nodej,wij,gain):
+    lbda = 0.5
+    __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
+    def __init__(self,nodei,nodej,edge,gain):
         self.nodei = nodei
         self.nodej = nodej
-        self.wij = wij
+        self.edge = edge
+        self.wij = self.edge["weight"]
         self.gain = gain
 
         self.timestamp = time.time() # time of creation of the nodes
@@ -67,6 +68,7 @@ class EdgesExtendedInfo:
         self.nodei.prob = self.pii_new
         self.nodej.prob = self.pjj_new
         self.nodei.union(self.nodej)
+        self.edge['connected'] = True
     @staticmethod
     def partial_entropy(value):
         return -value * np.log(value)

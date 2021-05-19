@@ -9,7 +9,7 @@ except:
 from heapq import heappop,heappush
 
 class HeapUpdater:
-    def __init__(self,heapMin,nbNodes,K=1000):
+    def __init__(self,heapMin,nbNodes,K=100):
         self.heapMin = heapMin
         self.nbNodes = nbNodes
         self.K = K
@@ -50,8 +50,8 @@ class HeapUpdater:
             d = len(self.heapMin)
 
     def check_condition(self):
-        nb_super_pixels = self.heapMin[0].nodei.dNa + self.nbNodes
-        return nb_super_pixels > self.K
+        self.nb_super_pixels = self.heapMin[0].nodei.dNa + self.nbNodes
+        return self.nb_super_pixels > self.K
 
 
 
