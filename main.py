@@ -5,13 +5,13 @@ try:
     from .utils import allUsefulModule
     from . import data_sampler
     from . import network_initializor
-    from .heapManager import edge_properties_updaterold, heapInitializer,heap_updater
+    from .heapManager import  heapInitializer,heap_updater
 except:
     from utils import allUsefulModule
     import data_sampler
-    from heapManager import  edge_properties_updaterold, heapInitializer,heap_updater
+    from heapManager import   heapInitializer,heap_updater
     from network_initialization import network_initializor
-
+import utils.utils
 import numpy as np
 import skimage.measure
 from  networkx.algorithms.traversal.edgebfs import edge_bfs
@@ -36,6 +36,7 @@ class Main:
     def __init__(self,img):
         self.img = img
         self.shape_img = self.img.shape[:2]
+        self.nbNodes = np.product(self.img.shape[:2])
         graph_init = NetworkInitializor(self.img)
         self.edges_with_nodes = graph_init.edges_with_nodes
         self.G = graph_init.G
@@ -43,29 +44,24 @@ class Main:
 
         self.edges_with_nodes_bis = np.array(list(self.G.edges.data()))
         self.heapMin = self.init_heap()
-        self.heap_updater = heap_updater.HeapUpdater(self.heapMin,nbNodes = np.product(self.img.shape[:2]))
+        self.heap_updater = heap_updater.HeapUpdater(self.heapMin,nbNodes = self.nbNodes)
         self.update_heap()
 
         self.labelling = self.label_nodes()
-        #self.labelling = self.label()
+
+        self.labelling = utils.utils.blend_img_with_semgmentation_map(self.img,self.labelling)
 
     @timeit
     def update_heap(self):
         self.heap_updater.iterate_until_end()
-    #@debugit
-    @timeit
-    def get_list_of_edge_properties(self):
-        list_of_edges_properties = [edge_properties_updaterold.EdgePropertiesUpdater(el) for el in self.heapMin]
-        return list_of_edges_properties
-
-    def save(self):
-        pickle.dump(self,open(self.path,"wb"))
-
     @timeit
     def init_heap(self):
         """ returns the heap val"""
         self.heap_initializer = heapInitializer.HeapInitializer(self.edges_with_nodes_bis)
         return self.heap_initializer.heapMin
+
+    def save(self):
+        pickle.dump(self,open(self.path,"wb"))
     @classmethod
     def load(cls):
         return pickle.load(open(cls.path,"rb"))
@@ -84,18 +80,12 @@ class Main:
         #return np.array([s5,s6])
         g = np.argsort(s5)
         return np.array(s6)[g].reshape(self.shape_img)
-    #
-    # def label(self):
-    #     self.labelling = skimage.measure.label(self.labelling)
-    #     a = np.linspace(0, self.labelling.max(), self.labelling.max() + 1)
-    #     np.random.shuffle(a)
-    #     new_labelling = a[self.labelling]
-    #     return new_labelling
 
 if __name__ == '__main__':
     index = 134
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-    img = plt.imread(path_img)[0:150,0:150]
+    #img = plt.imread(path_img)[0:150,0:150]
+    img = plt.imread(path_img)
     img = img.astype("float32")/255.0
 
     #img = img[:50,:50]
