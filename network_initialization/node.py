@@ -66,12 +66,10 @@ class Node:
 
         if n1 > n2:
             self.linked_list_of_nodes |= other_node.linked_list_of_nodes
-            #self.linked_list_of_nodes.union(other_node.linked_list_of_nodes)
             for el in other_node.linked_list_of_nodes:
                 el.linked_list_of_nodes = self.linked_list_of_nodes
         else:
             other_node.linked_list_of_nodes |= self.linked_list_of_nodes
-            #other_node.linked_list_of_nodes.union(self.linked_list_of_nodes)
             for el in self.linked_list_of_nodes:
                 el.linked_list_of_nodes = other_node.linked_list_of_nodes
 
