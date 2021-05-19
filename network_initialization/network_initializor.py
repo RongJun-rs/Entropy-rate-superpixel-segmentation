@@ -134,17 +134,11 @@ class NetworkInitializor:
 
         nodes = [node.Node(pos = el[0], w = el[1], mu = el[2], graph = self.G) for el in nodeInfo]
         return nodes
-
-
     def add_nodes_to_graph(self):
         self.G.add_nodes_from(self.nodes)
-
-
-
     #TODO : takes into account the warper of minHeap provided by networkx in its utils.heaps package,
     #TODO : on edgeneighbor class don't ouput positions at index :,0:2,:,:, but Nodes instance
 
-    #it might be more convenient
 if __name__ == '__main__':
     index = 15
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
