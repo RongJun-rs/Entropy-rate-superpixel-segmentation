@@ -5,6 +5,9 @@ from utils.decorator import debugit
 
 
 class EdgesExtendedInfo:
+    """
+        nodei,nodej and edge are the nodes'object and the edge's object that are on the graph
+    """
     lbda = 0.5
     __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
     def __init__(self,nodei,nodej,edge,gain):
@@ -60,8 +63,10 @@ class EdgesExtendedInfo:
         """
             apply the changes on the graph
         """
-        self.nodei.prob = self.pii_new
-        self.nodej.prob = self.pjj_new
+        self.pii = self.pii_new
+        self.pjj = self.pjj_new
+        self.nodei.prob = self.pii
+        self.nodej.prob = self.pjj
         self.nodei.union(self.nodej)
         self.edge['connected'] = True
     @staticmethod

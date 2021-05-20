@@ -19,7 +19,7 @@ dirFile = os.path.dirname(__file__)
 
 #Node = collections.namedtuple('Node',['pos','wi','mui'])
 
-class NetworkInitializor:
+class NetworkEdgeInitializor:
     """
         from an image img, construct a graph,for which nodes are pixels of "img" , and edges links each pair
         of pixels
@@ -139,13 +139,14 @@ class NetworkInitializor:
     #TODO : takes into account the warper of minHeap provided by networkx in its utils.heaps package,
     #TODO : on edgeneighbor class don't ouput positions at index :,0:2,:,:, but Nodes instance
 
+    #it might be more convenient
 if __name__ == '__main__':
     index = 15
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
     img = plt.imread(path_img)
     img = img.astype("float32")/255.0
 
-    alg = NetworkInitializor(img)
+    alg = NetworkEdgeInitializor(img)
 
     self = alg
 
