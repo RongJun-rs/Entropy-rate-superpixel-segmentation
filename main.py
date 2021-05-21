@@ -22,8 +22,11 @@ from  networkx.algorithms.traversal.edgebfs import edge_bfs
 
 NetworkEdgeInitializor = network_edge_initializor.NetworkEdgeInitializor
 dirFile = os.path.dirname(__file__)
-# TODO: read ground truth from path_seg using seg_doc.txt
-#TODO : check , efficient way to add edge to graph
+#TODO: use the time compiler on the super pixel algorithm, from the book on efficient pytohn programming
+#TODO : factorize the edge value computation
+#TODO : add the unit test
+#TODO : add the criterion values
+
 
 from enum import Enum
 class IterationMode(Enum):

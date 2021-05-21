@@ -4,6 +4,7 @@ import numpy as np
 from utils import image_viewer
 import matplotlib.pyplot as plt
 
+from utils.decorator import *
 
 try:
     from . import data_sampler
@@ -95,7 +96,7 @@ class EdgeNeighborAdder:
         """
         buffer_pos = pixel_pos[...,0]*self.m + pixel_pos[...,1]
         return buffer_pos
-
+    #@debugit
     def get_edges_for_shift(self):
         """
             return 2D array representing the value of each edge on the graph to construct
@@ -113,7 +114,7 @@ class EdgeNeighborAdder:
         diff_intensity_values = diff[...,2:]
         ROI = np.product(np.abs(diff_pos) <= 1,axis=-1).astype("bool")
 
-        norm_diff_pos = np.sum(diff_pos**2,axis=-1)
+        norm_diff_pos = np.sqrt(np.sum(diff_pos**2,axis=-1))
         data = np.exp(-(np.sum(diff_intensity_values ** 2, axis=-1)*norm_diff_pos**2)/(2*(self.sigma**2))) * ROI
 
         init_pos = self.convert_pixel_to_buffer_pos(img_shifted[...,:2])
