@@ -1,6 +1,7 @@
 import time
 from utils.decorator import timeit
 
+import numpy as np
 
 from heapq import heappop,heappush
 
@@ -11,6 +12,14 @@ class HeapUpdaterIterator:
         self.instant_last_graph_edit = instant_first_edge_add
         self.edges = edges
 
+        self.edges[0].update_gain()
+        self.accumulated_gain = self.init_acumulated_gain()
+
+    def init_acumulated_gain(self):
+        nbNodes = self.heapMin[0].nodei.graph.number_of_nodes()
+        lbda = self.heapMin[0].lbda
+        accumulated_gain = self.edges[0].gain + lbda * ( np.log(nbNodes) - nbNodes)
+        return accumulated_gain
 
     def check_if_gain_minHeap_updated_since_graph_edit(self):
         """
@@ -62,3 +71,4 @@ class HeapUpdaterIterator:
             edge.add_edge_to_graph() # add the edge to the graph
             self.edges.append(edge)
             self.instant_last_graph_edit = time.time()
+            self.accumulated_gain += self.heapMin[0].gain

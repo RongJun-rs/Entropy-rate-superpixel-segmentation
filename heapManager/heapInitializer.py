@@ -33,8 +33,9 @@ class HeapInitializer:
 
     @staticmethod
     def partial_entropy(value):
-        return -value * np.log(value)
-
+        res = np.zeros_like(value)
+        res[value>0] = (-value * np.log(value)) [value>0]
+        return res
     def init_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H

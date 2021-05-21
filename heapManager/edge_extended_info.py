@@ -71,7 +71,10 @@ class EdgesExtendedInfo:
         self.edge['connected'] = True
     @staticmethod
     def partial_entropy(value):
-        return -value * np.log(value)
+        if value>0:
+            return -value * np.log(value)
+        else:
+            return 0
     def get_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H
@@ -92,6 +95,7 @@ class EdgesExtendedInfo:
         res = part1 + part2 + part3
 
         return res
+
     def get_gain_B(self):
         Si = self.nodei.linked_list_of_nodes
         Sj = self.nodej.linked_list_of_nodes
