@@ -19,13 +19,7 @@ class TotalCostComputer:
 
     def __call__(self):
         return self.compute_cost()
-    def partial_cost_computer(self,idx):
-        edge = self.edges[idx]
-        mui = edge.nodei.mu
-        muj = edge.nodej.mu
-        pij = edge.pij
-        pji = edge.pji
-        mui * self.partial_entropy(pij)
+
     def partial_cost_computer_vectorized_idiffj(self):
         """
         compute the values of pij , pji , mui and muj for i different of j
@@ -46,7 +40,9 @@ class TotalCostComputer:
 
     @staticmethod
     def partial_entropy(el):
-        return - np.log(el) * el
+        res = np.zeros_like(el)
+        res[el>0] =  (-np.log(el) * el)[el>0]
+        return res
 
     def compute_H_cost(self):
         cost_H = np.sum(self.partial_entropy(self.pij) * self.muedgei + self.partial_entropy(self.pji) * self.muedgej)
@@ -55,6 +51,8 @@ class TotalCostComputer:
 
     def compute_B_cost(self):
         p = np.array([len(el) for el in self.list_linked_nodes])
+        p = p / np.sum(p)
+
         layout_entropy = np.sum(self.partial_entropy(p))
         cost_B = layout_entropy - self.NA
         return cost_B
