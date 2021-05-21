@@ -2,15 +2,16 @@ import numpy as np
 import pdb,heapq
 import collections
 from utils.decorator import debugit
-
+from utils import utils
 try:
     from . import edge_extended_info
+    from .. import lbdaComputer
 except:
     from heapManager import edge_extended_info
-
+    import lbdaComputer
 
 class HeapInitializer:
-    lbda = 0.5
+    lbda = lbdaComputer.LbdaComputer().lbda
     def __init__(self,edges_with_nodes):
         self.edges_with_nodes = edges_with_nodes
 

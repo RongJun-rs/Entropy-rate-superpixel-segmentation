@@ -2,7 +2,7 @@ import time
 from utils.decorator import timeit
 
 import numpy as np
-
+import lbdaComputer
 from heapq import heappop,heappush
 
 
@@ -17,7 +17,7 @@ class HeapUpdaterIterator:
 
     def init_acumulated_gain(self):
         nbNodes = self.heapMin[0].nodei.graph.number_of_nodes()
-        lbda = self.heapMin[0].lbda
+        lbda = lbdaComputer.LbdaComputer().lbda
         accumulated_gain = self.edges[0].gain + lbda * ( np.log(nbNodes) - nbNodes)
         return accumulated_gain
 

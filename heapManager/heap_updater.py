@@ -9,7 +9,7 @@ except:
 from heapq import heappop,heappush
 
 class HeapUpdater:
-    def __init__(self,heapMin,nbNodes,K=100):
+    def __init__(self,heapMin,nbNodes,K):
         self.heapMin = heapMin
         self.nbNodes = nbNodes
         self.K = K

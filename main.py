@@ -7,13 +7,15 @@ try:
     from . import network_initializor
     from .heapManager import  heapInitializer,heap_updater
     from . import imageLabeler
+    from . import lbdaComputer
 except:
     from utils import allUsefulModule
     import data_sampler
     from heapManager import   heapInitializer,heap_updater
     from network_initialization import network_edge_initializor
-    import imageLabeler
+    import imageLabeler,lbdaComputer
 import utils.utils
+
 import numpy as np
 import skimage.measure
 from  networkx.algorithms.traversal.edgebfs import edge_bfs
@@ -41,18 +43,22 @@ class Main:
 
     path = os.path.join(dirFile,"pickeld_data/pickled_main.pkl") #file where a serialized copy of the instance is saved
     path = os.path.abspath(path)
-    def __init__(self,img):
+    def __init__(self,img,K=100):
         self.img = img
         self.shape_img = self.img.shape[:2]
         self.nbNodes = np.product(self.img.shape[:2])
+        self.K = K
         graph_init = NetworkEdgeInitializor(self.img)
-        self.edges_with_nodes = self.graph_init.edges_with_nodes
+        self.edges_with_nodes = graph_init.edges_with_nodes
         self.G = graph_init.G
         self.G.add_weighted_edges_from(self.edges_with_nodes,connected = False)
 
         self.edges_with_nodes = np.array(list(self.G.edges.data()))
         self.heapMin = self.init_heap()
-        self.heap_updater = heap_updater.HeapUpdater(self.heapMin,nbNodes = self.nbNodes)
+
+        self.lbda_computer = self.init_lbda_computer()
+
+        self.heap_updater = heap_updater.HeapUpdater(self.heapMin,nbNodes = self.nbNodes,K = self.K)
         self.edges_linked = self.update_heap()
 
 
@@ -60,6 +66,9 @@ class Main:
 
         self.imageLabeler = imageLabeler.ImageLabeler(self.img,self.list_linked_nodes)
 
+    def init_lbda_computer(self):
+        alg = lbdaComputer.LbdaComputer(gainH=self.heap_initializer.gainH, gainB=self.heap_initializer.gainB, K=self.K)
+        return alg
     def get_linked_nodes(self):
         s1 = [id(el.linked_list_of_nodes) for el in self.G.nodes]
         a, b = np.unique(s1, return_index=True)
@@ -83,7 +92,7 @@ class Main:
 if __name__ == '__main__':
     index = 134
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-    img = plt.imread(path_img)#[:50,:50]
+    img = plt.imread(path_img)[:50,:50]
     #img = plt.imread(path_img)
     img = img.astype("float32")/255.0
     alg = Main(img)

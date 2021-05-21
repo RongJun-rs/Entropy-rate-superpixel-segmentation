@@ -13,3 +13,5 @@ class LbdaComputer(metaclass=singleton.SingletonMeta):
     def compute_lbda(self):
         lbda = self.lbdap * self.beta * self.K
         return lbda
+    def __call__(self):
+        return self.lbda

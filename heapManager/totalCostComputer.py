@@ -3,6 +3,10 @@
     the graph is equal to the expected value
 """
 import numpy as np
+try:
+    from .. import lbdaComputer
+except:
+    import lbdaComputer
 
 class TotalCostComputer:
     def __init__(self,heap_updater,G,list_linked_nodes):
@@ -12,7 +16,7 @@ class TotalCostComputer:
         self.list_linked_nodes = list_linked_nodes
         self.NA = self.heap_updater.heapMin[0].nodej.dNa + self.heap_updater.nbNodes
 
-        self.lbda = self.edges[0].lbda
+        self.lbda = lbdaComputer.LbdaComputer().lbda
 
         self.pij, self.pji, self.muedgei, self.muedgej = self.partial_cost_computer_vectorized_idiffj()
         self.mui,self.pii = self.partial_cost_computer_vectorized_self_loop()

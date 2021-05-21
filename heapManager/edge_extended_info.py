@@ -2,13 +2,13 @@ import numpy as np
 import pdb,heapq,time
 import collections
 from utils.decorator import debugit
-
+import lbdaComputer
 
 class EdgesExtendedInfo:
     """
         nodei,nodej and edge are the nodes'object and the edge's object that are on the graph
     """
-    lbda = 0.5
+    lbda = lbdaComputer.LbdaComputer().lbda
     __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
     def __init__(self,nodei,nodej,edge,gain):
         self.nodei = nodei
