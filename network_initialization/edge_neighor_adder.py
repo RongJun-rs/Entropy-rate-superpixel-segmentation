@@ -12,6 +12,7 @@ except:
 
 
 class EdgeNeighborAdder:
+    sigma = 5.0/255.0
     """
         a class used to feed a networkx  graph structure (see NetworkConstructor)
         It takes as input an image, and compute a 2D array
@@ -108,13 +109,14 @@ class EdgeNeighborAdder:
         img_shifted = self.get_shifted_image()
         diff = img_shifted - self.img_with_pos
 
-        ROI = np.product(np.abs(diff[...,:2]) <= 1,axis=-1).astype("bool")
+        diff_pos = diff[...,:2]
         diff_intensity_values = diff[...,2:]
+        ROI = np.product(np.abs(diff_pos) <= 1,axis=-1).astype("bool")
 
-        data = np.exp(-np.sum(diff_intensity_values ** 2, axis=-1)) * ROI
+        norm_diff_pos = np.sum(diff_pos**2,axis=-1)
+        data = np.exp(-(np.sum(diff_intensity_values ** 2, axis=-1)*norm_diff_pos**2)/(2*(self.sigma**2))) * ROI
 
         init_pos = self.convert_pixel_to_buffer_pos(img_shifted[...,:2])
-        #dst_pos = self.convert_pixel_to_buffer_pos(self.img_with_pos[...,:2])
         dst_pos = self.pos_pixel_as_buff
         graph_data_to_add = np.stack((init_pos,dst_pos,data),axis=0)
         return graph_data_to_add
@@ -123,7 +125,7 @@ class EdgeNeighborAdder:
 if __name__ == '__main__':
     index = 15
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-    img = plt.imread(path_img)
+    img = plt.imread(path_img)[:50,:50]
     img = img.astype("float32")/255.0
     out = np.roll(img,shift=[1,1,0],axis=(0,1,2))
     diff = (out-img)
