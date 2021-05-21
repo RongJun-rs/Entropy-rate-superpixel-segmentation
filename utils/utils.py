@@ -27,3 +27,20 @@ def blend_img_with_semgmentation_map(image,segmentation_layout,alpha=0.5):
 
     res = alpha * image + (1-alpha) * color_label(segmentation_layout)
     return res
+
+from collections.abc import Iterable
+#@debugit
+def partial_entropy(el,eps = - 10**(-10)):
+    if isinstance(el,Iterable):
+        res = np.zeros_like(el)
+        tmp = el > 0
+        res[tmp] = (-np.log(el[tmp]) * el[tmp])
+        return res
+    else:
+        if el >0:
+            return -np.log(el) * el
+        elif el> eps:
+            return 0
+        else:
+            print(el)
+            raise ValueError

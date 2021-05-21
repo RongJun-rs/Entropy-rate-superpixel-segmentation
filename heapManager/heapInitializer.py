@@ -11,19 +11,20 @@ except:
     import lbdaComputer
 
 class HeapInitializer:
-    lbda = lbdaComputer.LbdaComputer().lbda
-    def __init__(self,edges_with_nodes):
+    def __init__(self,edges_with_nodes,K):
         self.edges_with_nodes = edges_with_nodes
-
+        self.K = K
         self.nodei = self.edges_with_nodes[:, 0]
         self.nodej = self.edges_with_nodes[:, 1]
         self.edges = self.edges_with_nodes[:,2]
 
         self.wij = [el["weight"] for el in self.edges]
 
-
         self.gainH = self.init_gain_H()
         self.gainB = self.init_gain_B()
+
+        self.lbda = lbdaComputer.LbdaComputer(self.gainH,self.gainB,self.K).lbda
+
         self.gain = self.gainH + self.lbda * self.gainB
 
         #self.edges_with_nodes_and_gain = np.hstack([self.edges_with_nodes,-self.gain.reshape(-1,1)])
@@ -34,9 +35,8 @@ class HeapInitializer:
 
     @staticmethod
     def partial_entropy(value):
-        res = np.zeros_like(value)
-        res[value>0] = (-value * np.log(value)) [value>0]
-        return res
+        return utils.partial_entropy(value)
+
     def init_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H

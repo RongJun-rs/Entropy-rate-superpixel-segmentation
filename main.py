@@ -85,14 +85,14 @@ class Main:
     @timeit
     def init_heap(self):
         """ returns the heap val"""
-        self.heap_initializer = heapInitializer.HeapInitializer(self.edges_with_nodes)
+        self.heap_initializer = heapInitializer.HeapInitializer(self.edges_with_nodes,K = self.K)
         return self.heap_initializer.heapMin
 
 
 if __name__ == '__main__':
     index = 134
     path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-    img = plt.imread(path_img)[:50,:50]
+    img = plt.imread(path_img)#[:50,:50]
     #img = plt.imread(path_img)
     img = img.astype("float32")/255.0
     alg = Main(img)

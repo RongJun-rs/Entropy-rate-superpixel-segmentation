@@ -5,8 +5,10 @@
 import numpy as np
 try:
     from .. import lbdaComputer
+    from ..utils import utils
 except:
     import lbdaComputer
+    from utils import utils
 
 class TotalCostComputer:
     def __init__(self,heap_updater,G,list_linked_nodes):
@@ -43,10 +45,8 @@ class TotalCostComputer:
         return mui,pii
 
     @staticmethod
-    def partial_entropy(el):
-        res = np.zeros_like(el)
-        res[el>0] =  (-np.log(el) * el)[el>0]
-        return res
+    def partial_entropy(value):
+        return utils.partial_entropy(value)
 
     def compute_H_cost(self):
         cost_H = np.sum(self.partial_entropy(self.pij) * self.muedgei + self.partial_entropy(self.pji) * self.muedgej)

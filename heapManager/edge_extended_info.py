@@ -2,13 +2,13 @@ import numpy as np
 import pdb,heapq,time
 import collections
 from utils.decorator import debugit
+from utils import utils
 import lbdaComputer
 
 class EdgesExtendedInfo:
     """
         nodei,nodej and edge are the nodes'object and the edge's object that are on the graph
     """
-    lbda = lbdaComputer.LbdaComputer().lbda
     __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
     def __init__(self,nodei,nodej,edge,gain):
         self.nodei = nodei
@@ -16,7 +16,6 @@ class EdgesExtendedInfo:
         self.edge = edge
         self.wij = self.edge["weight"]
         self.gain = gain
-
         self.timestamp = time.time() # time of creation of the nodes
     def __lt__(self, other):
         """
@@ -54,7 +53,9 @@ class EdgesExtendedInfo:
         self.pji = self.wij / self.nodej.w
         self.pii = self.nodei.prob
         self.pjj = self.nodej.prob
-        gain = self.get_gain_H() + self.lbda * self.get_gain_B()
+
+        lbda = lbdaComputer.LbdaComputer().lbda
+        gain = self.get_gain_H() + lbda * self.get_gain_B()
         return gain
     def update_gain(self):
         self.gain = self.get_gain()
@@ -71,10 +72,8 @@ class EdgesExtendedInfo:
         self.edge['connected'] = True
     @staticmethod
     def partial_entropy(value):
-        if value>0:
-            return -value * np.log(value)
-        else:
-            return 0
+        return utils.partial_entropy(value)
+
     def get_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H
