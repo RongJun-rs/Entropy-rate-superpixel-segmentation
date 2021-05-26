@@ -30,6 +30,7 @@ def blend_img_with_semgmentation_map(image,segmentation_layout,alpha=0.5):
 
 from collections.abc import Iterable
 #@debugit
+from functools import lru_cache
 def partial_entropy(el,eps = - 10**(-10)):
     if isinstance(el,Iterable):
         res = np.zeros_like(el)
@@ -38,9 +39,27 @@ def partial_entropy(el,eps = - 10**(-10)):
         return res
     else:
         if el >0:
-            return -np.log(el) * el
+            return partial_entropy_single(el)
         elif el> eps:
             return 0
         else:
             print(el)
             raise ValueError
+
+#@lru_cache
+def partial_entropy_single(el):
+    return -np.log(el) * el
+
+rounding_value = 1000000
+s = np.linspace(0,(rounding_value-1),rounding_value)/rounding_value
+s1 = partial_entropy(s)
+lut = dict(zip(s,s1))
+lut[1] = 0
+
+
+def partial_entropy_single_lut_mode(el):
+    el1 = int(el*rounding_value)/rounding_value
+    return lut[el1]
+
+def partial_entropy_single_lut_mode_with_rounded_input(el):
+    return lut[el]
