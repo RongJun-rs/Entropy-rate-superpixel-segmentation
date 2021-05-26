@@ -46,8 +46,8 @@ class Main:
 
     path = os.path.join(dirFile,"pickeld_data/pickled_main.pkl") #file where a serialized copy of the instance is saved
     path = os.path.abspath(path)
-    #@profile
-    @timeit(nbtimes=4)
+    # @profile
+    # @timeit(nbtimes=4)
     def __init__(self,img,K=100,sigma= 5/255.0):
         self.img = img
         self.shape_img = self.img.shape[:2]
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         start = time.time()
         index = 134
         path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-        img = plt.imread(path_img)[:30,:30]
+        img = plt.imread(path_img)[:50,:50]
         #img = plt.imread(path_img)
         img = img.astype("float32")/255.0
         alg = Main(img,K = 20)
@@ -112,7 +112,7 @@ if __name__ == '__main__':
         from heapManager.totalCostComputer import TotalCostComputer
         s = TotalCostComputer(alg.heap_updater, alg.G, alg.list_linked_nodes)
 
-        #alg.imageLabeler.show_image_with_res()
+        alg.imageLabeler.show_image_with_res()
 
         print(f"accumulated_gain {alg.heap_updater.heap_updater_iterator.accumulated_gain}")
         print(f"gain computed at end {s()}")
