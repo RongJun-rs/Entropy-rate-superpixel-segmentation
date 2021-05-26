@@ -46,7 +46,7 @@ def partial_entropy(el,eps = - 10**(-10)):
             print(el)
             raise ValueError
 
-@lru_cache
+# @lru_cache
 def partial_entropy_single(el):
     return -np.log(el) * el
 

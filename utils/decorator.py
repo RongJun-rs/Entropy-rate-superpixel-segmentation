@@ -6,7 +6,7 @@ def debugit(function):
     def debug_mode(*args, **kwargs):
         return pdb.runcall(function,*args, **kwargs)
     return debug_mode
-def timeit(nbtimes=1,deactivate=False,show_mean_duration_only=True):
+def timeit(nbtimes=1,deactivate=True,show_mean_duration_only=True):
     def decorator(func):
         if deactivate:
             return func
