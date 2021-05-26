@@ -5,10 +5,10 @@ from utils.decorator import debugit
 from utils import utils
 try:
     from . import edge_extended_info
-    from .. import lbdaComputer
+    from .. import lbdaAndSigmaComputer
 except:
     from heapManager import edge_extended_info
-    import lbdaComputer
+    import lbdaAndSigmaComputer
 
 class HeapInitializer:
     def __init__(self,edges_with_nodes,K):
@@ -20,17 +20,15 @@ class HeapInitializer:
 
         self.wij = [el["weight"] for el in self.edges]
 
-        self.gainH = self.init_gain_H()
+        self.gainH,self.intern_gain_addition = self.init_gain_H()
         self.gainB = self.init_gain_B()
 
-        self.lbda = lbdaComputer.LbdaComputer(self.gainH,self.gainB,self.K).lbda
+        self.lbda = lbdaAndSigmaComputer.LbdaComputer(self.gainH, self.gainB, self.K).lbda
 
         self.gain = self.gainH + self.lbda * self.gainB
 
-        #self.edges_with_nodes_and_gain = np.hstack([self.edges_with_nodes,-self.gain.reshape(-1,1)])
-        gen = zip(self.edges_with_nodes,self.gain)
-        #self.edges_with_nodes_and_gainAsNamedTuple = [edge_extended_info.EdgesExtendedInfo(nodei,nodej,wij,gain) for ((nodei ,nodej ,wij),gain) in gen]
-        self.edges_with_nodes_and_gainAsNamedTuple = [edge_extended_info.EdgesExtendedInfo(nodei,nodej,edge,gain) for ((nodei ,nodej ,edge),gain) in gen]
+        gen = zip(self.edges_with_nodes,self.gain,self.intern_gain_addition)
+        self.edges_with_nodes_and_gainAsNamedTuple = [edge_extended_info.EdgesExtendedInfo(nodei,nodej,edge,gain,intern_gain_addition) for ((nodei ,nodej ,edge),gain,intern_gain_addition) in gen]
         self.heapMin = self.createBinaryMaxHeap()
 
     @staticmethod
@@ -40,8 +38,13 @@ class HeapInitializer:
     def init_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H
-        , in other words H(A U {edge}) - H(A), where A is the constructed graph so far
-        (not declared are this level)
+        , in other words H(A U {edge}) - H(A), where A is the null graph, the computation is done for each edge
+        , through vectorization
+
+
+        Remarks:
+                H(A) = 0, the gain can be separated in two,intern_gain_addition, the part dependant of the value of the edge
+                , and the rest of the gain
         """
 
 
@@ -68,7 +71,8 @@ class HeapInitializer:
         part3 = self.muj * self.partial_entropy(self.pjj_new)
         res = part1 + part2 + part3
 
-        return res
+        intern_gain_addition = part1
+        return res,intern_gain_addition
 
     #from utils.decorator import debugit
     def init_gain_B(self):

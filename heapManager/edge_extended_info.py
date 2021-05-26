@@ -3,19 +3,20 @@ import pdb,heapq,time
 import collections
 from utils.decorator import debugit
 from utils import utils
-import lbdaComputer
+import lbdaAndSigmaComputer
 
 class EdgesExtendedInfo:
     """
         nodei,nodej and edge are the nodes'object and the edge's object that are on the graph
     """
-    __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp"]
-    def __init__(self,nodei,nodej,edge,gain):
+    __slots__ = ["nodei","nodej","edge","wij","gain","pij","pji","pii","pjj","pii_new","pjj_new","timestamp","intern_gain_addition"]
+    def __init__(self,nodei,nodej,edge,gain,intern_gain_addition):
         self.nodei = nodei
         self.nodej = nodej
         self.edge = edge
         self.wij = self.edge["weight"]
         self.gain = gain
+        self.intern_gain_addition = intern_gain_addition
         self.timestamp = time.time() # time of creation of the nodes
     def __lt__(self, other):
         """
@@ -48,14 +49,17 @@ class EdgesExtendedInfo:
         out = out[:-3]
         out += f")"
         return out
+    #@profile
     def get_gain(self):
         self.pij = self.wij / self.nodei.w  # pij*ui is equal to pji*muj
         self.pji = self.wij / self.nodej.w
         self.pii = self.nodei.prob
         self.pjj = self.nodej.prob
 
-        lbda = lbdaComputer.LbdaComputer().lbda
-        gain = self.get_gain_H() + lbda * self.get_gain_B()
+        lbda = lbdaAndSigmaComputer.LbdaComputer().lbda
+        gain_H = self.get_gain_H()
+        gain_B = self.get_gain_B()
+        gain = gain_H + lbda * gain_B
         return gain
     def update_gain(self):
         self.gain = self.get_gain()
@@ -74,6 +78,8 @@ class EdgesExtendedInfo:
     def partial_entropy(value):
         return utils.partial_entropy(value)
 
+    # @profile
+    # @debugit
     def get_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H
@@ -87,14 +93,26 @@ class EdgesExtendedInfo:
 
         self.pii_new = self.pii - self.pij
         self.pjj_new = self.pjj - self.pji
+        #TODO : computer  mui * self.partial_entropy(self.pij) before
+        # TODO : compute
 
-        part1 = mui * self.partial_entropy(self.pij) + muj * self.partial_entropy(self.pji)
-        part2 = mui * (self.partial_entropy(self.pii_new) - self.partial_entropy(self.pii))
-        part3 = muj * (self.partial_entropy(self.pjj_new) - self.partial_entropy(self.pjj))
+        #part1 = mui * self.partial_entropy(self.pij) + muj * self.partial_entropy(self.pji)
+        part1 = self.intern_gain_addition
+
+        c = self.partial_entropy(self.pii_new)
+        d = self.partial_entropy(self.pii)
+        e = self.partial_entropy(self.pjj_new)
+        f = self.partial_entropy(self.pjj)
+        #assert np.max(np.abs(part1 - part1bis)) < 10**(-4)
+        # part2 = mui * (self.partial_entropy(self.pii_new) - self.partial_entropy(self.pii))
+        # part3 = muj * (self.partial_entropy(self.pjj_new) - self.partial_entropy(self.pjj))
+        part2 = mui * (d-c)
+        part3 = muj * (f-e)
         res = part1 + part2 + part3
 
         return res
 
+    #@profile
     def get_gain_B(self):
         Si = self.nodei.linked_list_of_nodes
         Sj = self.nodej.linked_list_of_nodes
