@@ -2,7 +2,7 @@ import numpy as np
 from utils.utils import *
 from utils.utils import lut
 
-@timeit(10)
+@timeit(20)
 def repeatonarray(func,inpt):
     for el in inpt:
         func(el)

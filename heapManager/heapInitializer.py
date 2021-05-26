@@ -66,6 +66,10 @@ class HeapInitializer:
         self.pii_new = 1.0 - self.pij
         self.pjj_new = 1.0 - self.pji
 
+        # els = [self.pji,self.pij,self.pii_new,self.pjj_new ]
+        # for el in els:
+        #     el = np.round(el,utils.precision)
+        # self.pji, self.pij, self.pii_new, self.pjj_new = els
         part1 = self.mui * self.partial_entropy(self.pij) + self.muj * self.partial_entropy(self.pji)
         part2 = self.mui * self.partial_entropy(self.pii_new)
         part3 = self.muj * self.partial_entropy(self.pjj_new)

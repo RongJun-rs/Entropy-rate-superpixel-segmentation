@@ -98,16 +98,8 @@ class EdgesExtendedInfo:
 
         #part1 = mui * self.partial_entropy(self.pij) + muj * self.partial_entropy(self.pji)
         part1 = self.intern_gain_addition
-
-        c = self.partial_entropy(self.pii_new)
-        d = self.partial_entropy(self.pii)
-        e = self.partial_entropy(self.pjj_new)
-        f = self.partial_entropy(self.pjj)
-        #assert np.max(np.abs(part1 - part1bis)) < 10**(-4)
-        # part2 = mui * (self.partial_entropy(self.pii_new) - self.partial_entropy(self.pii))
-        # part3 = muj * (self.partial_entropy(self.pjj_new) - self.partial_entropy(self.pjj))
-        part2 = mui * (d-c)
-        part3 = muj * (f-e)
+        part2 = mui * (self.partial_entropy(self.pii_new) - self.partial_entropy(self.pii))
+        part3 = muj * (self.partial_entropy(self.pjj_new) - self.partial_entropy(self.pjj))
         res = part1 + part2 + part3
 
         return res

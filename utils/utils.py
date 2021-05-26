@@ -46,16 +46,23 @@ def partial_entropy(el,eps = - 10**(-10)):
             print(el)
             raise ValueError
 
-#@lru_cache
+@lru_cache
 def partial_entropy_single(el):
     return -np.log(el) * el
 
 rounding_value = 1000000
+precision = round(np.log(rounding_value)/np.log(10))
 s = np.linspace(0,(rounding_value-1),rounding_value)/rounding_value
 s1 = partial_entropy(s)
 lut = dict(zip(s,s1))
 lut[1] = 0
 
+def roundit(el):
+    if isinstance(el,Iterable):
+        return np.round((el*rounding_value))/rounding_value
+    else:
+        el1 = int(el*rounding_value)/rounding_value
+    return el1
 
 def partial_entropy_single_lut_mode(el):
     el1 = int(el*rounding_value)/rounding_value
