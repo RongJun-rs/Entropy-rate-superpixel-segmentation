@@ -8,12 +8,12 @@ from utils.decorator import *
 
 try:
     from . import data_sampler
+    from .. import lbdaAndSigmaComputer
 except:
     import data_sampler
-
+    import lbdaAndSigmaComputer
 
 class EdgeNeighborAdder:
-    sigma = 5.0/255.0
     """
         a class used to feed a networkx  graph structure (see NetworkConstructor)
         It takes as input an image, and compute a 2D array
@@ -55,6 +55,7 @@ class EdgeNeighborAdder:
         self.img_with_pos = self.get_image_with_pos()
 
         self.pos_pixel_as_buff = self.get_buffer_pos_of_fixed_image()
+        self.sigma = lbdaAndSigmaComputer.SigmaReader()()
 
     def get_image_with_pos(self):
         """

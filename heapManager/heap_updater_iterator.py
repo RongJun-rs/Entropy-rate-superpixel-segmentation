@@ -2,7 +2,7 @@ import time
 from utils.decorator import timeit
 
 import numpy as np
-import lbdaComputer
+import lbdaAndSigmaComputer
 from heapq import heappop,heappush
 
 
@@ -17,7 +17,7 @@ class HeapUpdaterIterator:
 
     def init_acumulated_gain(self):
         nbNodes = self.heapMin[0].nodei.graph.number_of_nodes()
-        lbda = lbdaComputer.LbdaComputer().lbda
+        lbda = lbdaAndSigmaComputer.LbdaComputer().lbda
         accumulated_gain = self.edges[0].gain + lbda * ( np.log(nbNodes) - nbNodes)
         return accumulated_gain
 
@@ -50,6 +50,7 @@ class HeapUpdaterIterator:
         """
         nodeiandnodejoftopHeapAreLinked = (self.heapMin[0].nodei.linked_list_of_nodes is self.heapMin[0].nodej.linked_list_of_nodes)
         return nodeiandnodejoftopHeapAreLinked
+    #@profile
     def __call__(self):
         """
             if nodes of the top of minHeap are linked pop, then remove it from the heap,

@@ -4,10 +4,10 @@
 """
 import numpy as np
 try:
-    from .. import lbdaComputer
+    from .. import lbdaAndSigmaComputer
     from ..utils import utils
 except:
-    import lbdaComputer
+    import lbdaAndSigmaComputer
     from utils import utils
 
 class TotalCostComputer:
@@ -18,7 +18,7 @@ class TotalCostComputer:
         self.list_linked_nodes = list_linked_nodes
         self.NA = self.heap_updater.heapMin[0].nodej.dNa + self.heap_updater.nbNodes
 
-        self.lbda = lbdaComputer.LbdaComputer().lbda
+        self.lbda = lbdaAndSigmaComputer.LbdaComputer().lbda
 
         self.pij, self.pji, self.muedgei, self.muedgej = self.partial_cost_computer_vectorized_idiffj()
         self.mui,self.pii = self.partial_cost_computer_vectorized_self_loop()
