@@ -15,3 +15,10 @@ class LbdaComputer(metaclass=singleton.SingletonMeta):
         return lbda
     def __call__(self):
         return self.lbda
+
+
+class SigmaReader(metaclass=singleton.SingletonMeta):
+    def __init__(self,sigma):
+        self.sigma = sigma
+    def __call__(self):
+        return self.sigma
