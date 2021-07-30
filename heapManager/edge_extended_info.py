@@ -3,8 +3,9 @@ import pdb,heapq,time
 import collections
 from utils.decorator import debugit
 from utils import utils
+from utils.utils import roundit
 import lbdaAndSigmaComputer
-
+#TODO : compute the self.pij of each node outside
 class EdgesExtendedInfo:
     """
         nodei,nodej and edge are the nodes'object and the edge's object that are on the graph
@@ -49,7 +50,7 @@ class EdgesExtendedInfo:
         out = out[:-3]
         out += f")"
         return out
-    #@profile
+    # @profile
     def get_gain(self):
         self.pij = self.wij / self.nodei.w  # pij*ui is equal to pji*muj
         self.pji = self.wij / self.nodej.w
@@ -80,6 +81,7 @@ class EdgesExtendedInfo:
 
     # @profile
     # @debugit
+    # @profile
     def get_gain_H(self):
         """
         compute the difference in cost by adding the edge linking nodei and nodej, for the function H
@@ -91,8 +93,8 @@ class EdgesExtendedInfo:
         muj = self.nodej.mu
 
 
-        self.pii_new = self.pii - self.pij
-        self.pjj_new = self.pjj - self.pji
+        self.pii_new = roundit(self.pii - self.pij)
+        self.pjj_new = roundit(self.pjj - self.pji)
         #TODO : computer  mui * self.partial_entropy(self.pij) before
         # TODO : compute
 

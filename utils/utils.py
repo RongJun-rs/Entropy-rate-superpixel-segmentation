@@ -31,15 +31,21 @@ def blend_img_with_semgmentation_map(image,segmentation_layout,alpha=0.5):
 from collections.abc import Iterable
 #@debugit
 from functools import lru_cache
-def partial_entropy(el,eps = - 10**(-10)):
-    if isinstance(el,Iterable):
+def partial_entropy_iterable(el, eps=- 10 ** (-10)):
+    if isinstance(el, Iterable):
         res = np.zeros_like(el)
         tmp = el > 0
         res[tmp] = (-np.log(el[tmp]) * el[tmp])
         return res
     else:
+        raise
+# @profile
+def partial_entropy(el, eps=- 10 ** (-3)):
         if el >0:
-            return partial_entropy_single(el)
+            # return partial_entropy_single(el,mode=EntropyComputeMode.LUT_NO_ROUND)
+            # return partial_entropy_single(el,mode=EntropyComputeMode.LUT)
+            return partial_entropy_single(el,mode=EntropyComputeMode.DIRECT)
+            # return partial_entropy_single(el, mode= EntropyComputeMode.FalseMode)
         elif el> eps:
             return 0
         else:
@@ -47,13 +53,40 @@ def partial_entropy(el,eps = - 10**(-10)):
             raise ValueError
 
 # @lru_cache
-def partial_entropy_single(el):
+from enum import Enum
+
+class EntropyComputeMode(Enum):
+    DIRECT = 1
+    LUT = 2
+    LUT_NO_ROUND = 3
+    FalseMode = 4
+
+def partial_entropy_single(el,mode):
+    if mode == EntropyComputeMode.DIRECT:
+        return partial_entropy_direct(el)
+    elif mode == EntropyComputeMode.LUT:
+        return partial_entropy_single_lut_mode(el)
+    elif mode  == EntropyComputeMode.LUT_NO_ROUND:
+        return partial_entropy_single_lut_mode_with_rounded_input(el)
+    elif mode == EntropyComputeMode.FalseMode:
+        return partial_entropy_false_mode(el)
+# @lru_cache
+def partial_entropy_direct(el):
     return -np.log(el) * el
 
-rounding_value = 1000000
+def partial_entropy_single_lut_mode(el):
+    el1 = int(el*rounding_value)/rounding_value
+    return lut[el1]
+
+def partial_entropy_single_lut_mode_with_rounded_input(el):
+    return lut[el]
+
+def partial_entropy_false_mode(el):
+    return 1
+rounding_value = 100000
 precision = round(np.log(rounding_value)/np.log(10))
 s = np.linspace(0,(rounding_value-1),rounding_value)/rounding_value
-s1 = partial_entropy(s)
+s1 = partial_entropy_iterable(s)
 lut = dict(zip(s,s1))
 lut[1] = 0
 
@@ -63,10 +96,3 @@ def roundit(el):
     else:
         el1 = int(el*rounding_value)/rounding_value
     return el1
-
-def partial_entropy_single_lut_mode(el):
-    el1 = int(el*rounding_value)/rounding_value
-    return lut[el1]
-
-def partial_entropy_single_lut_mode_with_rounded_input(el):
-    return lut[el]

@@ -50,7 +50,7 @@ class HeapUpdaterIterator:
         """
         nodeiandnodejoftopHeapAreLinked = (self.heapMin[0].nodei.linked_list_of_nodes is self.heapMin[0].nodej.linked_list_of_nodes)
         return nodeiandnodejoftopHeapAreLinked
-    #@profile
+    # @profile
     def __call__(self):
         """
             if nodes of the top of minHeap are linked pop, then remove it from the heap,

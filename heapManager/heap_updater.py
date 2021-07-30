@@ -30,7 +30,7 @@ class HeapUpdater:
             self.iterate()
             if len(self.heapMin) % print_rate == 0:
                 print(len(self.heapMin))
-    @timeit
+    @timeit()
     def iterate_until_end(self):
         d = len(self.heapMin)
         while d>0 and self.check_condition():

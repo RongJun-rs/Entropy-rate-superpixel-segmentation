@@ -1,6 +1,7 @@
 import os,pickle,time,pdb,heapq
 import matplotlib.pyplot as plt
 from utils.decorator import *
+import argparse
 try:
     from .utils import allUsefulModule
     from . import data_sampler
@@ -47,8 +48,7 @@ class Main:
     path = os.path.join(dirFile,"pickeld_data/pickled_main.pkl") #file where a serialized copy of the instance is saved
     path = os.path.abspath(path)
     # @profile
-    # @timeit(nbtimes=4)
-    def __init__(self,img,K=100,sigma= 5/255.0):
+    def __init__(self,img,K,sigma):
         self.img = img
         self.shape_img = self.img.shape[:2]
         self.nbNodes = np.product(self.img.shape[:2])
@@ -97,28 +97,32 @@ class Main:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-img", "--image",help="get the path to the image, for superpixel segmentation")
+    parser.add_argument("-sp","--super_pixels", type=int, help="set the numer of superpixels to use for the segmentation",default=20)
+
+    args = parser.parse_args()
+    path_img = args.image
+
+    sp = args.super_pixels
+
+    assert os.path.exists(path_img)
+    assert isinstance(sp,int)
+
     deltas = []
     for i in range(1):
         start = time.time()
-        index = 134
-        path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
-        img = plt.imread(path_img)[:50,:50]
+        # index = 134
+        # path_img,path_seg = data_sampler.get_path_img_and_seg_from_id(index)
+        img = plt.imread(path_img)#[:100,:100]
         #img = plt.imread(path_img)
         img = img.astype("float32")/255.0
-        alg = Main(img,K = 20)
-        self = alg
-
-
-        from heapManager.totalCostComputer import TotalCostComputer
-        s = TotalCostComputer(alg.heap_updater, alg.G, alg.list_linked_nodes)
-
-        alg.imageLabeler.show_image_with_res()
-
-        print(f"accumulated_gain {alg.heap_updater.heap_updater_iterator.accumulated_gain}")
-        print(f"gain computed at end {s()}")
+        alg = Main(img,K = 10, sigma= 5/255.0)
+        # self = alg
 
         stop = time.time()
         delta = stop-start
         deltas.append(delta)
     print(deltas)
-    #assert alg.heap_updater.heap_updater_iterator.accumulated_gain == s()
+    alg.imageLabeler.show_image_with_res()
+

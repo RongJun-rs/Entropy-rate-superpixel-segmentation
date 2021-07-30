@@ -46,7 +46,7 @@ class TotalCostComputer:
 
     @staticmethod
     def partial_entropy(value):
-        return utils.partial_entropy(value)
+        return utils.partial_entropy_iterable(value)
 
     def compute_H_cost(self):
         cost_H = np.sum(self.partial_entropy(self.pij) * self.muedgei + self.partial_entropy(self.pji) * self.muedgej)
