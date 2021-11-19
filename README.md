@@ -11,3 +11,5 @@ python main.py -img path_image -sp N
 where:
 path_image is the path to the image to be partitionned
 N is the number of superpixels for the partitionning of the image
+
+choose a small image for tests 
